@@ -1,446 +1,310 @@
-import { Link } from 'react-router-dom';
-import { useState, useEffect, useRef } from 'react';
-import products from '../assets/products.json';
-import image1 from '../assets/hero1.png';
-import image2 from '../assets/hero2.png';
-import image3 from '../assets/3.png';
-import image4 from '../assets/4.png';
-import image5 from '../assets/5.png';
-import bgImage from '../assets/img4.png';
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import ProductCard from "../components/ProductCard";
+import ProductCarousel from "../components/ProductCarousel";
+import { ArrowRightIcon, ChevronDownIcon } from "../components/icons";
+import { products } from "../assets/products";
 
-function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [animationKey, setAnimationKey] = useState(0);
-  const [isHeroVisible, setIsHeroVisible] = useState(false);
-  const heroRef = useRef(null);
-  const featuredProducts = products.slice(0, 4);
-  const heroImages = [image1, image2, image3, image4, image5];
-  const text = "Welcome to FlexWear";
-  const characters = text.split('');
+const FAQ = [
+  {
+    q: "Do I need an account to shop?",
+    a: "No. You can browse the full rotation and build a cart without one. In a production build an account would gate checkout so orders could be tracked — here, checkout does not exist at all.",
+  },
+  {
+    q: "What happens to my cart if I refresh?",
+    a: "It clears. The cart lives in React state inside the app shell and is never written to storage. Nothing about your session is persisted anywhere.",
+  },
+  {
+    q: "How often does the rotation change?",
+    a: "In this build, never — the catalog is a static JSON file with twenty entries. A real version would swap that file on a schedule and drop pieces as they sell through.",
+  },
+  {
+    q: "Can I return something?",
+    a: "Returns are not implemented. This is a front-end demonstration covering browsing and cart behavior only; there is no order system, payment processing, or fulfilment behind it.",
+  },
+];
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000);
-    return () => clearTimeout(timer);
-  }, []);
+const STEPS = [
+  {
+    n: "01",
+    title: "Browse the rotation",
+    body: "Twenty pieces across seven categories. Every size that sells through gets replaced, so the list stays short enough to actually read.",
+  },
+  {
+    n: "02",
+    title: "Check the fit",
+    body: "Every garment lists its weight, cut, and how it sits. Oversized pieces are labelled as oversized rather than sold as a happy accident.",
+  },
+  {
+    n: "03",
+    title: "Build your cart",
+    body: "Add pieces and adjust quantities as you go. Your cart is held in memory for the session and clears when you close the tab.",
+  },
+];
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
-        prevIndex === heroImages.length - 1 ? 0 : prevIndex + 1
-      );
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [heroImages.length]);
+const PROMISES = [
+  {
+    title: "A rotation, not a catalogue",
+    body: "Twenty pieces at a time. Short enough to browse in one sitting, curated enough that nothing you scroll past is filler.",
+  },
+  {
+    title: "Fit stated up front",
+    body: "Weight, cut, and drape are on the card before you add anything. Oversized means oversized, not a sizing mistake.",
+  },
+  {
+    title: "Nothing here to break",
+    body: "Photography is stored locally, so the storefront keeps working with no network and no third-party image requests.",
+  },
+];
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        setIsHeroVisible(entries[0].isIntersecting);
-      },
-      { threshold: 0.5 }
-    );
-
-    if (heroRef.current) {
-      observer.observe(heroRef.current);
-    }
-
-    return () => {
-      if (heroRef.current) {
-        observer.unobserve(heroRef.current);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
-    let scrollTimeout;
-    
-    const handleScroll = () => {
-      if (isHeroVisible) {
-        setAnimationKey((prevKey) => prevKey + 1);
-      }
-      clearTimeout(scrollTimeout);
-      scrollTimeout = setTimeout(() => {}, 150);
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      clearTimeout(scrollTimeout);
-    };
-  }, [isHeroVisible]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="loader w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
+function FaqItem({ item, open, onToggle }) {
   return (
-    <div className="bg-gray-100 animate-fadeIn pt-[60px] sm:pt-0">
-      <section
-        ref={heroRef}
-        className="relative h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] flex items-center"
-        style={{
-          backgroundImage: `url(${bgImage})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
-        <style>
-          {`
-            .typing-container {
-              display: inline-flex;
-              position: relative;
-              white-space: nowrap;
-              max-width: 100%;
-              visibility: visible;
-            }
-            .typing-character {
-              display: inline-block;
-              opacity: 0;
-              animation: typeLetter 0.1s ease-in forwards;
-              visibility: visible;
-              min-width: 0.2em;
-            }
-            .typing-character.space {
-              min-width: 0.5em;
-            }
-            @keyframes typeLetter {
-              from { opacity: 0; transform: translateY(10px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-            .typing-cursor::after {
-              content: '|';
-              position: absolute;
-              right: -0.5rem;
-              top: 0;
-              color: transparent;
-              font-weight: bold;
-              animation: blink 0.6s step-end infinite;
-              visibility: visible;
-            }
-            @keyframes blink {
-              50% { opacity: 0; }
-            }
-            .fade-in {
-              animation: fadeIn 1s ease-in-out 0.5s forwards;
-              opacity: 0;
-            }
-            @keyframes fadeIn {
-              from { opacity: 0; transform: translateY(10px); }
-              to { opacity: 1; transform: translateY(0); }
-            }
-            .image-swap {
-              animation: imageFade 1s ease-in-out;
-            }
-            @keyframes imageFade {
-              0% { opacity: 0; transform: scale(0.95); }
-              100% { opacity: 1; transform: scale(1); }
-            }
-            .hero-image-container {
-              width: 400px;
-              height: 400px;
-              overflow: hidden;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            }
-            .hero-image {
-              max-width: 100%;
-              max-height: 100%;
-              object-fit: contain;
-            }
-            /* Responsive background image and hero section */
-            @media (max-width: 640px) {
-              .typing-container {
-                max-width: 90vw;
-              }
-              .typing-character {
-                font-size: 1.25rem;
-              }
-              section[style*="background-image"] {
-                background-size: cover;
-                background-position: 60% center; /* Slight offset for better mobile focus */
-              }
-              .hero-image-container {
-                width: 150px;
-                height: 150px;
-              }
-            }
-            @media (min-width: 640px) {
-              .hero-image-container {
-                width: 250px;
-                height: 250px;
-              }
-              .typing-character {
-                font-size: 1.75rem;
-              }
-              section[style*="background-image"] {
-                background-size: cover;
-                background-position: center;
-              }
-            }
-            @media (min-width: 768px) {
-              .hero-image-container {
-                width: 350px;
-                height: 350px;
-              }
-              .typing-character {
-                font-size: 2.5rem;
-              }
-              section[style*="background-image"] {
-                background-size: cover;
-                background-position: center;
-              }
-            }
-            @media (min-width: 1024px) {
-              .typing-character {
-                font-size: 3rem;
-              }
-              section[style*="background-image"] {
-                background-size: cover;
-                background-position: center;
-              }
-              .hero-image-container {
-                width: 500px;
-                height: 500px;
-              }
-            }
-            /* Individual character delays */
-            ${characters.map((_, index) => `
-              .typing-character:nth-child(${index + 1}) {
-                animation-delay: ${index * 0.1}s;
-              }
-            `).join('')}
-          `}
-        </style>
-        <div className="container mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center gap-4 sm:gap-6 md:gap-8 justify-center relative z-10 pt-6 sm:pt-0">
-          <div className="md:w-1/2 text-left text-black mb-4 sm:mb-6 md:mb-0 pr-0 sm:pr-2 md:pr-4">
-            <div className="typing-container">
-              <h1 className="text-2xl sm:text-2xl md:text-5xl font-bold mb-2 sm:mb-4" key={`typing-${animationKey}`}>
-                {characters.map((char, index) => (
-                  <span
-                    key={`${char}-${index}-${animationKey}`}
-                    className={`typing-character ${char === ' ' ? 'space' : ''} ${index === characters.length - 1 ? 'typing-cursor' : ''}`}
-                  >
-                    {char === ' ' ? '\u00A0' : char}
-                  </span>
-                ))}
-              </h1>
-            </div>
-            <p className="text-base sm:text-lg md:text-xl mb-4 sm:mb-6 max-w-xl sm:max-w-2xl fade-in">
-              Discover our curated collection of high-quality products<br/>designed to enhance your lifestyle.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Link
-                to="/products"
-                className="btn btn-primary px-4 sm:px-6 py-2 sm:py-3 text-base sm:text-lg rounded-md bg-purple-600 text-white hover:bg-purple-700 transition w-full sm:w-auto"
-              >
-                Shop Now
-              </Link>
-              <Link
-                to="/about"
-                className="btn btn-secondary px-4 sm:px-6 py-2 sm:py-3 text-base sm:text-lg rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 transition w-full sm:w-auto"
-              >
-                Learn More
-              </Link>
-            </div>
-          </div>
-          <div className="md:w-1/3 hero-image-container">
-            <img
-              src={heroImages[currentImageIndex]}
-              alt={`Hero Image ${currentImageIndex + 1}`}
-              className="hero-image rounded-lg image-swap"
-              key={currentImageIndex}
-            />
-          </div>
-        </div>
-      </section>
+    <div className="border-b border-line">
+      <h3>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          className="flex w-full items-center justify-between gap-4 py-5 text-left"
+        >
+          <span className="font-display text-base font-bold sm:text-lg">
+            {item.q}
+          </span>
+          <ChevronDownIcon
+            size={20}
+            className={`shrink-0 text-muted transition-transform duration-200 ${
+              open ? "rotate-180 text-iris" : ""
+            }`}
+          />
+        </button>
+      </h3>
 
-      <section className="container mx-auto px-8 sm:px-6 py-8 sm:py-8">
-        <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center">
-          Featured Products
-        </h2>
-        <div className="overflow-hidden relative">
-          <style>
-            {`
-              .carousel {
-                display: flex;
-                animation: slide 16s linear infinite;
-              }
-              @keyframes slide {
-                0% { transform: translateX(0); }
-                100% { transform: translateX(-50%); }
-              }
-              .carousel:hover {
-                animation-play-state: paused;
-              }
-              .product-card {
-                min-width: 100%;
-                flex-shrink: 0;
-                padding: 0 0.75rem;
-              }
-              @media (min-width: 640px) {
-                .product-card {
-                  min-width: 50%;
-                }
-              }
-              @media (min-width: 768px) {
-                .product-card {
-                  min-width: 25%;
-                }
-              }
-            `}
-          </style>
-          <div className="carousel">
-            {isLoading
-              ? Array.from({ length: 4 }).map((_, index) => (
-                  <div key={`skeleton-${index}`} className="product-card">
-                    <div className="w-full h-40 sm:h-48 bg-gray-200 rounded-md animate-pulse mb-3"></div>
-                    <div className="h-5 bg-gray-300 rounded-full w-3/4 mb-2 animate-pulse"></div>
-                    <div className="h-4 bg-gray-300 rounded-full w-1/2 mb-3 animate-pulse"></div>
-                    <div className="h-10 bg-blue-300 rounded-md animate-pulse"></div>
-                  </div>
-                ))
-              : [
-                  ...featuredProducts,
-                  ...featuredProducts,
-                ].map((product, index) => (
-                  <div key={`${product.id}-${index}`} className="product-card">
-                    <div className="w-full h-40 sm:h-48 overflow-hidden rounded-md mb-3">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="text-base sm:text-lg font-semibold text-gray-800 truncate">
-                      {product.name}
-                    </h3>
-                    <p className="text-gray-600 font-medium mt-1 text-sm sm:text-base">
-                      ${product.price.toFixed(2)}
-                    </p>
-                    <Link
-                      to="/products"
-                      className="btn btn-primary mt-3 w-full text-center px-4 py-2 text-sm sm:text-base bg-purple-600 text-white hover:bg-purple-700 rounded-md transition"
-                    >
-                      View Product
-                    </Link>
-                  </div>
-                ))}
-          </div>
-        </div>
-        <div className="text-center mt-6 sm:mt-8">
-          <Link to="/products" className="btn btn-secondary px-6 sm:px-10 py-3 sm:py-5 text-base sm:text-lg rounded-md bg-gray-200 text-gray-800 hover:bg-gray-300 transition">
-            See All Products
-          </Link>
-        </div>
-      </section>
-
-      <section className="bg-white py-8 sm:py-12">
-        <div className="container mx-auto px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 sm:mb-8 text-center">
-            Why Shop with FlexLab?
-          </h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
-            <div className="text-center">
-              <svg
-                className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-purple-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                ></path>
-              </svg>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
-                Quality Guarantee
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base">
-                We source only the best products to ensure your satisfaction.
-              </p>
-            </div>
-            <div className="text-center">
-              <svg
-                className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-purple-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                ></path>
-              </svg>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
-                Fast Shipping
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Get your orders delivered quickly and reliably.
-              </p>
-            </div>
-            <div className="text-center">
-              <svg
-                className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-3 sm:mb-4 text-purple-600"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"
-                ></path>
-              </svg>
-              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-2">
-                24/7 Support
-              </h3>
-              <p className="text-gray-600 text-sm sm:text-base">
-                Our team is here to assist you anytime, anywhere.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-purple-600 text-white py-8 sm:py-12">
-        <div className="container mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">
-            Join Our Newsletter
-          </h2>
-          <p className="text-base sm:text-lg mb-4 sm:mb-6 max-w-md sm:max-w-xl mx-auto">
-            Subscribe to receive exclusive offers and updates on our latest products.
-          </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-0">
-            <input
-              type="email"
-              placeholder="Enter your email"
-              className="px-4 py-2 rounded-t-md sm:rounded-l-md sm:rounded-t-none text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full sm:w-64"
-            />
-            <button className="btn btn-primary rounded-b-md sm:rounded-r-md sm:rounded-b-none px-4 sm:px-6 py-2 text-base sm:text-lg bg-purple-600 text-white hover:bg-purple-700 transition">
-              Subscribe
-            </button>
-          </div>
-        </div>
-      </section>
+      {open && (
+        <p className="animate-fade-up max-w-2xl pb-6 text-sm leading-relaxed text-muted">
+          {item.a}
+        </p>
+      )}
     </div>
   );
 }
 
-export default Home;
+export default function Home({ addToCart }) {
+  const [openFaq, setOpenFaq] = useState(0);
+  const featured = products.slice(0, 4);
+
+  return (
+    <>
+      {/* Hero */}
+      <section className="border-b border-line">
+        <div className="shell grid gap-12 py-20 sm:py-24 lg:grid-cols-12 lg:gap-16 lg:py-32">
+          <div className="lg:col-span-7">
+            <p className="eyebrow">Curated rotation</p>
+
+            <h1 className="mt-5 font-display text-display-xl">
+              Twenty pieces.
+              <br />
+              Zero filler.
+            </h1>
+
+            <p className="lede mt-7 max-w-xl">
+              FlexWear stocks oversized streetwear on a short cycle: heavy
+              tees, loopback fleece, cargo pants, and the shoes to finish it.
+              Everything that sells through gets replaced.
+            </p>
+
+            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+              <Link to="/products" className="btn btn-primary">
+                Shop the rotation
+                <ArrowRightIcon size={18} />
+              </Link>
+              <a href="#rotation" className="btn btn-secondary">
+                See what is in it
+              </a>
+            </div>
+
+            <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-8">
+              {[
+                ["20", "pieces"],
+                ["7", "categories"],
+                ["1", "rotation"],
+              ].map(([value, label]) => (
+                <div key={label}>
+                  <dt className="font-display text-3xl font-extrabold tabular-nums">
+                    {value}
+                  </dt>
+                  <dd className="mt-1 text-sm text-muted">{label}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <div className="lg:col-span-5">
+            <div className="grid grid-cols-2 gap-4">
+              {featured.slice(0, 4).map((product, index) => (
+                <div
+                  key={product.id}
+                  className={`card overflow-hidden ${
+                    index % 2 === 1 ? "mt-8" : ""
+                  }`}
+                >
+                  <img
+                    src={product.src}
+                    alt={product.name}
+                    className="aspect-[4/5] w-full object-cover"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Featured carousel */}
+      <section
+        id="rotation"
+        className="scroll-mt-32 border-b border-line py-16 sm:py-20 lg:py-28"
+      >
+        <div className="shell flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <p className="eyebrow">In rotation now</p>
+            <h2 className="mt-4 font-display text-display-lg">
+              Moving through the drop
+            </h2>
+          </div>
+
+          <Link
+            to="/products"
+            className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-iris transition-colors hover:text-iris-deep"
+          >
+            All twenty pieces
+            <ArrowRightIcon size={18} />
+          </Link>
+        </div>
+
+        <div className="mt-12">
+          <ProductCarousel
+            products={products}
+            addToCart={addToCart}
+            label="Featured products in the current rotation"
+          />
+        </div>
+
+        <p className="shell mt-6 text-xs text-muted">
+          Hover or focus the track to pause it.
+        </p>
+      </section>
+
+      {/* What you get */}
+      <section className="border-y border-line bg-surface">
+        <div className="shell section-y">
+          <div className="max-w-2xl">
+            <p className="eyebrow">What you get</p>
+            <h2 className="mt-4 font-display text-display-lg">
+              Built to be small on purpose
+            </h2>
+          </div>
+
+          <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {PROMISES.map((item) => (
+              <div key={item.title} className="border-t border-line pt-6">
+                <h3 className="font-display text-lg font-bold">
+                  {item.title}
+                </h3>
+                <p className="mt-3 text-sm leading-relaxed text-muted">
+                  {item.body}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <section className="shell section-y">
+        <div className="max-w-2xl">
+          <p className="eyebrow">How it works</p>
+          <h2 className="mt-4 font-display text-display-lg">
+            Three steps, no account wall
+          </h2>
+        </div>
+
+        <ol className="mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
+          {STEPS.map((step) => (
+            <li key={step.n} className="border-t border-line pt-6">
+              <span className="font-display text-sm font-bold tabular-nums text-iris">
+                {step.n}
+              </span>
+              <h3 className="mt-3 font-display text-lg font-bold">
+                {step.title}
+              </h3>
+              <p className="mt-3 text-sm leading-relaxed text-muted">
+                {step.body}
+              </p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      {/* FAQ */}
+      <section className="border-y border-line bg-surface">
+        <div className="shell section-y">
+          <div className="grid gap-12 lg:grid-cols-12">
+            <div className="lg:col-span-4">
+              <p className="eyebrow">FAQ</p>
+              <h2 className="mt-4 font-display text-display-md">
+                Questions worth asking
+              </h2>
+              <p className="mt-4 text-sm leading-relaxed text-muted">
+                Answered from what the build actually does, rather than from a
+                returns policy that does not exist yet.
+              </p>
+            </div>
+
+            <div className="lg:col-span-8">
+              {FAQ.map((item, index) => (
+                <FaqItem
+                  key={item.q}
+                  item={item}
+                  open={openFaq === index}
+                  onToggle={() =>
+                    setOpenFaq(openFaq === index ? -1 : index)
+                  }
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="bg-iris">
+        <div className="shell py-20 text-center sm:py-24">
+          <h2 className="mx-auto max-w-2xl font-display text-display-lg text-white">
+            The list is twenty long. It will not stay that way.
+          </h2>
+
+          <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-white/80">
+            Pieces rotate as they sell through. If something in here is your
+            size, it will not be here next month.
+          </p>
+
+          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link
+              to="/products"
+              className="btn bg-white text-ink hover:bg-bone"
+            >
+              Shop the rotation
+              <ArrowRightIcon size={18} />
+            </Link>
+            <a
+              href="#rotation"
+              className="btn border border-white/30 text-white hover:bg-white/10"
+            >
+              Back to the top
+            </a>
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

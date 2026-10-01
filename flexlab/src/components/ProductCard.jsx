@@ -1,74 +1,61 @@
-import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from "react";
+import { CATEGORY_LABELS, formatPrice } from "../assets/products";
+import { CheckIcon } from "./icons";
 
-function ProductCard({ product }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+export default function ProductCard({ product, addToCart, onAdd }) {
+  const [added, setAdded] = useState(false);
+  const timer = useRef(null);
 
-  const handleAddToCart = () => {
-    setIsModalOpen(true);
-  };
+  useEffect(() => () => clearTimeout(timer.current), []);
 
-  const closeModal = () => {
-    setIsModalOpen(false);
+  const handleAdd = () => {
+    addToCart?.(product);
+    onAdd?.(product);
+    setAdded(true);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setAdded(false), 1600);
   };
 
   return (
-    <>
-      <div className="product-card">
-        <div className="w-full h-48 overflow-hidden rounded-md">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <h3 className="text-lg font-semibold mt-2">{product.name}</h3>
-        <p className="text-gray-600">${product.price.toFixed(2)}</p>
-        <button
-          onClick={handleAddToCart}
-          className="btn btn-primary mt-2 w-full"
-        >
-          Add to Cart
-        </button>
+    <article className="card group flex flex-col overflow-hidden transition-shadow duration-200 hover:shadow-card">
+      <div className="aspect-[4/5] w-full overflow-hidden bg-bone">
+        <img
+          src={product.src}
+          alt={product.name}
+          loading="lazy"
+          className="h-full w-full object-cover"
+        />
       </div>
 
-      {/* Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn">
-          <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-xl">
-            <h3 className="text-lg font-semibold text-gray-800 mb-4">
-              Login Required
-            </h3>
-            <p className="text-gray-600 mb-6">
-              You are not logged in, please login first or create an account.
-            </p>
-            <div className="flex flex-col space-y-3">
-              <Link
-                to="/login"
-                className="btn btn-primary text-center"
-                onClick={closeModal}
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="btn btn-secondary text-center"
-                onClick={closeModal}
-              >
-                Create Account
-              </Link>
-              <button
-                onClick={closeModal}
-                className="btn btn-danger text-center"
-              >
-                Close
-              </button>
-            </div>
-          </div>
+      <div className="flex flex-1 flex-col gap-1 border-t border-line p-4">
+        <p className="eyebrow text-[11px]">{CATEGORY_LABELS[product.category]}</p>
+
+        <div className="flex items-baseline justify-between gap-3">
+          <h3 className="font-display text-base font-bold leading-snug">
+            {product.name}
+          </h3>
+          <p className="shrink-0 font-sans text-sm font-semibold tabular-nums">
+            {formatPrice(product.price)}
+          </p>
         </div>
-      )}
-    </>
+
+        <p className="text-sm leading-relaxed text-muted">{product.tagline}</p>
+
+        <button
+          type="button"
+          onClick={handleAdd}
+          className="btn btn-secondary mt-3 w-full"
+        >
+          {added ? (
+            <>
+              <CheckIcon size={16} />
+              Added
+            </>
+          ) : (
+            "Add to cart"
+          )}
+        </button>
+      </div>
+    </article>
   );
 }
-
-export default ProductCard;

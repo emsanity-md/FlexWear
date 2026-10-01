@@ -1,62 +1,162 @@
 [
   {
     "id": 1,
-    "name": "Graphic Tees",
-    "price": 59.99,
-    "image": "https://www.penshoppe.com/cdn/shop/files/988877-White_4.jpg?v=1747786399&width=1080"
+    "name": "Heavyweight Tee",
+    "price": 42,
+    "category": "tees",
+    "image": "heavyweight-tee",
+    "tagline": "240gsm cotton, boxy through the body."
   },
   {
     "id": 2,
-    "name": "Bucket Hat",
-    "price": 129.99,
-    "image": "https://i5.walmartimages.com/seo/Bucket-Hat-For-Men-Women-Cotton-Packable-Fishing-Cap-Navy-L-XL_b9ed310f-dd6d-4fb1-a36c-688dd8207f10_1.4afc5b713cf479a1dc385c8e37ef24fd.jpeg"
+    "name": "Boxy Pocket Tee",
+    "price": 38,
+    "category": "tees",
+    "image": "boxy-pocket-tee",
+    "tagline": "Chest pocket, dropped shoulder, wide rib neck."
   },
   {
     "id": 3,
-    "name": "Tote Bag",
-    "price": 19.99,
-    "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5IEV4Wk_k8PH9gpBEkQ-AWpKingPOVNQk9g&s"
+    "name": "Chest Print Tee",
+    "price": 44,
+    "category": "tees",
+    "image": "chest-print-tee",
+    "tagline": "Small chest print, regular fit, soft jersey."
   },
   {
     "id": 4,
-    "name": "Oversized Hoodie",
-    "price": 39.99,
-    "image": "https://down-ph.img.susercontent.com/file/039216de90392552444cf3344ae48276"
+    "name": "Long Sleeve Crew",
+    "price": 54,
+    "category": "tees",
+    "image": "long-sleeve-crew",
+    "tagline": "Rib cuffs to hold the sleeve, midweight jersey."
   },
   {
     "id": 5,
-    "name": "Mininmalist Tees",
-    "price": 39.99,
-    "image": "https://down-ph.img.susercontent.com/file/ph-11134207-7r98q-lxhpanztk8p037"
+    "name": "Oversized Hoodie",
+    "price": 68,
+    "category": "fleece",
+    "image": "oversized-hoodie",
+    "tagline": "The anchor piece. Heavy loopback, drop shoulder."
   },
   {
     "id": 6,
-    "name": "Windbreaker Jacket",
-    "price": 89.99,
-    "image": "https://media-assets.grailed.com/prd/listing/temp/32529f8ca7dd4c3a8ffbafeabca7497d"
+    "name": "Logo Sweatshirt",
+    "price": 58,
+    "category": "fleece",
+    "image": "logo-sweatshirt",
+    "tagline": "Chest embroidery on brushed-back fleece."
   },
   {
     "id": 7,
-    "name": "Cargo Pants",
-    "price": 79.99,
-    "image": "https://images-cdn.ubuy.co.in/65dc8a7d7f6cbf20f618e971-imesrun-womens-cargo-pants-baggy-y2k.jpg"
+    "name": "Heavyweight Hoodie",
+    "price": 72,
+    "category": "fleece",
+    "image": "heavyweight-hoodie",
+    "tagline": "Boxy cut with a lined hood and flat drawcords."
   },
   {
     "id": 8,
-    "name": "Croptop Hoodie",
-    "price": 49.99,
-    "image": "https://down-ph.img.susercontent.com/file/ac02950f192a30633250c8018c4cc44c"
+    "name": "Rain Shell",
+    "price": 96,
+    "category": "outerwear",
+    "image": "rain-shell",
+    "tagline": "Waterproof shell, taped seams, packable hood."
   },
   {
     "id": 9,
-    "name": "Oversized T-Shirt",
-    "price": 99.99,
-    "image": "https://static.nike.com/a/images/f_auto/dpr_3.0,cs_srgb/h_484,c_limit/0916c79b-3f18-4281-b6cd-c712d54249ac/how-to-style-a-nike-oversized-t-shirt.jpg"
+    "name": "Windbreaker Jacket",
+    "price": 118,
+    "category": "outerwear",
+    "image": "windbreaker-jacket",
+    "tagline": "Colour-blocked shell that folds into its pocket."
   },
   {
     "id": 10,
-    "name": "Sneakers",
-    "price": 129.99,
-    "image": "https://cdn.runrepeat.com/storage/gallery/buying_guide_primary/214/214-best-chunky-sneakers-001-16187842-main.jpg"
+    "name": "Coach Jacket",
+    "price": 98,
+    "category": "outerwear",
+    "image": "coach-jacket",
+    "tagline": "Snap front with rib knit at cuff and hem."
+  },
+  {
+    "id": 11,
+    "name": "Quilted Puffer Jacket",
+    "price": 104,
+    "category": "outerwear",
+    "image": "quilted-puffer-jacket",
+    "tagline": "Baffle-quilted fill, made to layer over a hoodie."
+  },
+  {
+    "id": 12,
+    "name": "Cargo Pants",
+    "price": 88,
+    "category": "bottoms",
+    "image": "cargo-pants",
+    "tagline": "Six pockets, straight leg, cuffed ankle."
+  },
+  {
+    "id": 13,
+    "name": "Washed Denim",
+    "price": 94,
+    "category": "bottoms",
+    "image": "washed-denim",
+    "tagline": "Stone-washed with a relaxed rise."
+  },
+  {
+    "id": 14,
+    "name": "Utility Shorts",
+    "price": 44,
+    "category": "bottoms",
+    "image": "utility-shorts",
+    "tagline": "Twill shorts with a button fly and rolled hem."
+  },
+  {
+    "id": 15,
+    "name": "Bucket Hat",
+    "price": 34,
+    "category": "headwear",
+    "image": "bucket-hat",
+    "tagline": "Packable cotton with a stitched brim."
+  },
+  {
+    "id": 16,
+    "name": "Knit Beanie",
+    "price": 28,
+    "category": "headwear",
+    "image": "knit-beanie",
+    "tagline": "Rib knit with a folded cuff."
+  },
+  {
+    "id": 17,
+    "name": "Leather Satchel",
+    "price": 168,
+    "category": "bags",
+    "image": "leather-satchel",
+    "tagline": "Full-grain leather with brass buckles."
+  },
+  {
+    "id": 18,
+    "name": "Crossbody Sling",
+    "price": 46,
+    "category": "bags",
+    "image": "crossbody-sling",
+    "tagline": "Worn across the body, one zipped compartment."
+  },
+  {
+    "id": 19,
+    "name": "Suede Low-Top",
+    "price": 128,
+    "category": "footwear",
+    "image": "suede-low-top",
+    "tagline": "Cream suede upper on a gum rubber sole."
+  },
+  {
+    "id": 20,
+    "name": "Court Low",
+    "price": 110,
+    "category": "footwear",
+    "image": "court-low",
+    "tagline": "Low profile court shoe with a padded collar."
   }
 ]
