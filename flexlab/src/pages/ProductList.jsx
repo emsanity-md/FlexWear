@@ -1,77 +1,90 @@
-import { useState, useEffect } from 'react';
-import ProductCard from '../components/ProductCard';
-import products from '../assets/products.json';
+import { useMemo, useState } from "react";
+import ProductCard from "../components/ProductCard";
+import {
+  CATEGORIES,
+  CATEGORY_LABELS,
+  products,
+} from "../assets/products";
+import { useSearchParams } from "react-router-dom";
 
-function SkeletonCard() {
-  return (
-    <>
-      <style>
-        {`
-          .wave-animation {
-            position: relative;
-            overflow: hidden;
-            background: #e5e7eb;
-          }
-          .wave-animation::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-              90deg,
-              transparent,
-              rgba(255, 255, 255, 0.2),
-              transparent
-            );
-            animation: wave 1.5s linear infinite;
-          }
-          @keyframes wave {
-            0% {
-              transform: translateX(0);
-            }
-            100% {
-              transform: translateX(200%);
-            }
-          }
-        `}
-      </style>
-      <div className="border rounded-lg p-4">
-        <div className="w-full h-48 wave-animation rounded mb-4"></div>
-        <div className="h-4 wave-animation rounded w-3/4 mb-2"></div>
-        <div className="h-4 wave-animation rounded w-1/2 mb-2"></div>
-        <div className="h-8 wave-animation rounded w-1/3"></div>
-      </div>
-    </>
+export default function ProductList({ addToCart }) {
+  const [params, setParams] = useSearchParams();
+  const requested = params.get("category");
+  const [active, setActive] = useState(
+    CATEGORIES.includes(requested) ? requested : "all",
   );
-}
 
-function ProductList({ addToCart }) {
-  const [isLoading, setIsLoading] = useState(true);
+  const visible = useMemo(
+    () =>
+      active === "all"
+        ? products
+        : products.filter((product) => product.category === active),
+    [active],
+  );
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, []);
+  const select = (category) => {
+    setActive(category);
+    const next = new URLSearchParams(params);
+    if (category === "all") next.delete("category");
+    else next.set("category", category);
+    setParams(next, { replace: true });
+  };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Our Products</h1>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-        {isLoading
-          ? Array(products.length)
-              .fill()
-              .map((_, index) => <SkeletonCard key={index} />)
-          : products.map((product) => (
-              <ProductCard key={product.id} product={product} addToCart={addToCart} />
-            ))}
+    <div className="shell section-y">
+      <header className="max-w-2xl">
+        <p className="eyebrow">The rotation</p>
+        <h1 className="mt-4 font-display text-display-lg">
+          Twenty pieces, seven categories
+        </h1>
+        <p className="lede mt-5">
+          Everything currently in stock. Pieces are added as the rotation
+          opens up, so this list changes shape over time.
+        </p>
+      </header>
+
+      <div className="mt-12 flex flex-wrap items-center gap-2 border-y border-line py-4">
+        <button
+          type="button"
+          onClick={() => select("all")}
+          className={`rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
+            active === "all"
+              ? "bg-ink text-bone"
+              : "text-muted hover:bg-surface hover:text-ink"
+          }`}
+        >
+          All
+        </button>
+
+        {CATEGORIES.map((category) => (
+          <button
+            key={category}
+            type="button"
+            onClick={() => select(category)}
+            className={`rounded-md px-3.5 py-2 text-sm font-medium transition-colors ${
+              active === category
+                ? "bg-ink text-bone"
+                : "text-muted hover:bg-surface hover:text-ink"
+            }`}
+          >
+            {CATEGORY_LABELS[category]}
+          </button>
+        ))}
+      </div>
+
+      <p className="mt-6 text-sm text-muted" aria-live="polite">
+        Showing {visible.length} piece{visible.length === 1 ? "" : "s"}
+      </p>
+
+      <div className="mt-6 grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-6">
+        {visible.map((product) => (
+          <ProductCard
+            key={product.id}
+            product={product}
+            addToCart={addToCart}
+          />
+        ))}
       </div>
     </div>
   );
 }
-
-export default ProductList;
