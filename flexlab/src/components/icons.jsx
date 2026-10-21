@@ -118,3 +118,38 @@ export function TrashIcon(props) {
     </Icon>
   );
 }
+
+export function UserIcon(props) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="8" r="3.75" />
+      <path d="M4.75 20a7.25 7.25 0 0 1 14.5 0" />
+    </Icon>
+  );
+}
+
+export function LockIcon(props) {
+  return (
+    <Icon {...props}>
+      <rect x="5" y="10.5" width="14" height="9.5" rx="2" />
+      <path d="M8.5 10.5V7.75a3.5 3.5 0 0 1 7 0v2.75" />
+    </Icon>
+  );
+}
+
+export function ShieldIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3.25l7 2.6v5.4c0 4.05-2.85 7.45-7 8.75-4.15-1.3-7-4.7-7-8.75v-5.4l7-2.6z" />
+      <path d="M9.25 12l1.9 1.95L14.9 10" />
+    </Icon>
+  );
+}
+
+export function SparkIcon(props) {
+  return (
+    <Icon {...props}>
+      <path d="M12 3.5l1.9 4.9 4.9 1.9-4.9 1.9-1.9 4.9-1.9-4.9-4.9-1.9 4.9-1.9L12 3.5z" />
+    </Icon>
+  );
+}
