@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import ProductCard from "../components/ProductCard";
+import AccountFreeNotice from "../components/AccountFreeNotice";
 import ProductCarousel from "../components/ProductCarousel";
+import Reveal from "../components/Reveal";
+import SectionHeading from "../components/SectionHeading";
 import { ArrowRightIcon, ChevronDownIcon } from "../components/icons";
 import { products } from "../assets/products";
 
 const FAQ = [
   {
     q: "Do I need an account to shop?",
-    a: "No. You can browse the full rotation and build a cart without one. In a production build an account would gate checkout so orders could be tracked — here, checkout does not exist at all.",
+    a: "No. There is no sign-up or sign-in anywhere in this build. You can browse the full rotation and build a cart without one. In a production build an account would gate checkout so orders could be tracked — here, checkout does not exist at all.",
   },
   {
     q: "What happens to my cart if I refresh?",
@@ -38,7 +40,7 @@ const STEPS = [
   {
     n: "03",
     title: "Build your cart",
-    body: "Add pieces and adjust quantities as you go. Your cart is held in memory for the session and clears when you close the tab.",
+    body: "Add pieces and adjust quantities as you go. No sign-up, no password. Your cart is held in memory for the session and clears when you close the tab.",
   },
 ];
 
@@ -65,25 +67,35 @@ function FaqItem({ item, open, onToggle }) {
           type="button"
           onClick={onToggle}
           aria-expanded={open}
-          className="flex w-full items-center justify-between gap-4 py-5 text-left"
+          className="group flex w-full items-center justify-between gap-4 py-5 text-left"
         >
-          <span className="font-display text-base font-bold sm:text-lg">
+          <span className="font-display text-base font-bold transition-colors duration-200 group-hover:text-iris sm:text-lg">
             {item.q}
           </span>
           <ChevronDownIcon
             size={20}
-            className={`shrink-0 text-muted transition-transform duration-200 ${
+            className={`shrink-0 text-muted transition-transform duration-300 ease-out-expo ${
               open ? "rotate-180 text-iris" : ""
             }`}
           />
         </button>
       </h3>
 
-      {open && (
-        <p className="animate-fade-up max-w-2xl pb-6 text-sm leading-relaxed text-muted">
-          {item.a}
-        </p>
-      )}
+      {/*
+        The panel stays mounted and the row height animates, so the answer
+        opens and closes instead of popping into existence.
+      */}
+      <div
+        className={`grid transition-[grid-template-rows] duration-300 ease-out-expo ${
+          open ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
+        }`}
+      >
+        <div className="overflow-hidden" aria-hidden={!open}>
+          <p className="max-w-2xl pb-6 text-sm leading-relaxed text-muted">
+            {item.a}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
@@ -95,90 +107,116 @@ export default function Home({ addToCart }) {
   return (
     <>
       {/* Hero */}
-      <section className="border-b border-line">
-        <div className="shell grid gap-12 py-20 sm:py-24 lg:grid-cols-12 lg:gap-16 lg:py-32">
+      <section className="relative overflow-hidden border-b border-line glow">
+        <div className="shell relative grid gap-14 py-20 sm:py-24 lg:grid-cols-12 lg:gap-16 lg:py-32">
           <div className="lg:col-span-7">
-            <p className="eyebrow">Curated rotation</p>
+            <Reveal>
+              <p className="eyebrow">Curated rotation</p>
+            </Reveal>
 
-            <h1 className="mt-5 font-display text-display-xl">
-              Twenty pieces.
-              <br />
-              Zero filler.
-            </h1>
+            <Reveal delay={70}>
+              <h1 className="mt-5 font-display text-display-xl">
+                Twenty pieces.
+                <br />
+                Zero filler.
+              </h1>
+            </Reveal>
 
-            <p className="lede mt-7 max-w-xl">
-              FlexWear stocks oversized streetwear on a short cycle: heavy
-              tees, loopback fleece, cargo pants, and the shoes to finish it.
-              Everything that sells through gets replaced.
-            </p>
+            <Reveal delay={140}>
+              <p className="lede mt-7 max-w-xl">
+                FlexWear stocks oversized streetwear on a short cycle: heavy
+                tees, loopback fleece, cargo pants, and the shoes to finish it.
+                Everything that sells through gets replaced.
+              </p>
+            </Reveal>
 
-            <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-              <Link to="/products" className="btn btn-primary">
-                Shop the rotation
-                <ArrowRightIcon size={18} />
-              </Link>
-              <a href="#rotation" className="btn btn-secondary">
-                See what is in it
-              </a>
-            </div>
+            <Reveal delay={210}>
+              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
+                <Link to="/products" className="btn btn-primary group">
+                  Shop the rotation
+                  <ArrowRightIcon
+                    size={18}
+                    className="transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+                  />
+                </Link>
 
-            <dl className="mt-14 grid max-w-lg grid-cols-3 gap-6 border-t border-line pt-8">
-              {[
-                ["20", "pieces"],
-                ["7", "categories"],
-                ["1", "rotation"],
-              ].map(([value, label]) => (
-                <div key={label}>
-                  <dt className="font-display text-3xl font-extrabold tabular-nums">
-                    {value}
-                  </dt>
-                  <dd className="mt-1 text-sm text-muted">{label}</dd>
-                </div>
-              ))}
-            </dl>
+                <a href="#rotation" className="btn btn-secondary">
+                  See what is in it
+                </a>
+              </div>
+            </Reveal>
+
+            <Reveal delay={280}>
+              <dl className="mt-14 grid max-w-lg grid-cols-3 gap-4 border-t border-line pt-8 sm:gap-6">
+                {[
+                  ["20", "pieces"],
+                  ["7", "categories"],
+                  ["0", "accounts needed"],
+                ].map(([value, label]) => (
+                  <div key={label}>
+                    <dt className="font-display text-3xl font-extrabold tabular-nums">
+                      {value}
+                    </dt>
+                    <dd className="mt-1 text-xs text-muted sm:text-sm">
+                      {label}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </Reveal>
           </div>
 
           <div className="lg:col-span-5">
             <div className="grid grid-cols-2 gap-4">
-              {featured.slice(0, 4).map((product, index) => (
-                <div
+              {featured.map((product, index) => (
+                <Reveal
                   key={product.id}
-                  className={`card overflow-hidden ${
-                    index % 2 === 1 ? "mt-8" : ""
-                  }`}
+                  delay={index * 90}
+                  className={index % 2 === 1 ? "mt-8" : ""}
                 >
-                  <img
-                    src={product.src}
-                    alt={product.name}
-                    className="aspect-[4/5] w-full object-cover"
-                  />
-                </div>
+                  <div className="card overflow-hidden">
+                    <img
+                      src={product.src}
+                      alt={product.name}
+                      loading="lazy"
+                      className="aspect-[4/5] w-full object-cover transition-transform duration-700 ease-out-expo hover:scale-[1.05]"
+                    />
+                  </div>
+                </Reveal>
               ))}
             </div>
           </div>
         </div>
       </section>
 
+      {/* Why there is no account */}
+      <AccountFreeNotice />
+
       {/* Featured carousel */}
       <section
         id="rotation"
-        className="scroll-mt-32 border-b border-line py-16 sm:py-20 lg:py-28"
+        className="scroll-mt-28 border-b border-line py-16 sm:py-20 lg:py-28"
       >
         <div className="shell flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-          <div>
+          <Reveal>
             <p className="eyebrow">In rotation now</p>
             <h2 className="mt-4 font-display text-display-lg">
               Moving through the drop
             </h2>
-          </div>
+          </Reveal>
 
-          <Link
-            to="/products"
-            className="inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-iris transition-colors hover:text-iris-deep"
-          >
-            All twenty pieces
-            <ArrowRightIcon size={18} />
-          </Link>
+          <Reveal delay={90}>
+            <Link
+              to="/products"
+              className="group inline-flex shrink-0 items-center gap-2 text-sm font-semibold text-iris transition-colors hover:text-iris-deep"
+            >
+              All twenty pieces
+              <ArrowRightIcon
+                size={18}
+                className="transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+              />
+            </Link>
+          </Reveal>
         </div>
 
         <div className="mt-12">
@@ -197,50 +235,58 @@ export default function Home({ addToCart }) {
       {/* What you get */}
       <section className="border-y border-line bg-surface">
         <div className="shell section-y">
-          <div className="max-w-2xl">
-            <p className="eyebrow">What you get</p>
-            <h2 className="mt-4 font-display text-display-lg">
-              Built to be small on purpose
-            </h2>
-          </div>
+          <Reveal>
+            <SectionHeading
+              eyebrow="What you get"
+              title="Built to be small on purpose"
+              className="max-w-2xl"
+            />
+          </Reveal>
 
-          <div className="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
-            {PROMISES.map((item) => (
-              <div key={item.title} className="border-t border-line pt-6">
-                <h3 className="font-display text-lg font-bold">
-                  {item.title}
-                </h3>
+          <ul className="section-gap grid gap-10 sm:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+            {PROMISES.map((item, index) => (
+              <Reveal
+                key={item.title}
+                as="li"
+                delay={index * 80}
+                className="border-t border-line pt-6"
+              >
+                <h3 className="font-display text-lg font-bold">{item.title}</h3>
                 <p className="mt-3 text-sm leading-relaxed text-muted">
                   {item.body}
                 </p>
-              </div>
+              </Reveal>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
       {/* How it works */}
       <section className="shell section-y">
-        <div className="max-w-2xl">
-          <p className="eyebrow">How it works</p>
-          <h2 className="mt-4 font-display text-display-lg">
-            Three steps, no account wall
-          </h2>
-        </div>
+        <Reveal>
+          <SectionHeading
+            eyebrow="How it works"
+            title="Three steps, no account wall"
+            className="max-w-2xl"
+          />
+        </Reveal>
 
-        <ol className="mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
-          {STEPS.map((step) => (
-            <li key={step.n} className="border-t border-line pt-6">
+        <ol className="section-gap grid gap-10 md:grid-cols-3 md:gap-8">
+          {STEPS.map((step, index) => (
+            <Reveal
+              key={step.n}
+              as="li"
+              delay={index * 80}
+              className="border-t border-line pt-6"
+            >
               <span className="font-display text-sm font-bold tabular-nums text-iris">
                 {step.n}
               </span>
-              <h3 className="mt-3 font-display text-lg font-bold">
-                {step.title}
-              </h3>
+              <h3 className="mt-3 font-display text-lg font-bold">{step.title}</h3>
               <p className="mt-3 text-sm leading-relaxed text-muted">
                 {step.body}
               </p>
-            </li>
+            </Reveal>
           ))}
         </ol>
       </section>
@@ -249,7 +295,7 @@ export default function Home({ addToCart }) {
       <section className="border-y border-line bg-surface">
         <div className="shell section-y">
           <div className="grid gap-12 lg:grid-cols-12">
-            <div className="lg:col-span-4">
+            <Reveal className="lg:col-span-4">
               <p className="eyebrow">FAQ</p>
               <h2 className="mt-4 font-display text-display-md">
                 Questions worth asking
@@ -258,18 +304,19 @@ export default function Home({ addToCart }) {
                 Answered from what the build actually does, rather than from a
                 returns policy that does not exist yet.
               </p>
-            </div>
+            </Reveal>
 
             <div className="lg:col-span-8">
               {FAQ.map((item, index) => (
-                <FaqItem
-                  key={item.q}
-                  item={item}
-                  open={openFaq === index}
-                  onToggle={() =>
-                    setOpenFaq(openFaq === index ? -1 : index)
-                  }
-                />
+                <Reveal key={item.q} delay={index * 60}>
+                  <FaqItem
+                    item={item}
+                    open={openFaq === index}
+                    onToggle={() =>
+                      setOpenFaq(openFaq === index ? -1 : index)
+                    }
+                  />
+                </Reveal>
               ))}
             </div>
           </div>
@@ -277,32 +324,39 @@ export default function Home({ addToCart }) {
       </section>
 
       {/* CTA */}
-      <section className="bg-iris">
-        <div className="shell py-20 text-center sm:py-24">
-          <h2 className="mx-auto max-w-2xl font-display text-display-lg text-white">
-            The list is twenty long. It will not stay that way.
-          </h2>
+      <section className="relative overflow-hidden bg-iris glow-invert">
+        <div className="shell relative py-20 text-center sm:py-24">
+          <Reveal>
+            <h2 className="mx-auto max-w-2xl font-display text-display-lg text-white">
+              The list is twenty long. It will not stay that way.
+            </h2>
+          </Reveal>
 
-          <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-white/80">
-            Pieces rotate as they sell through. If something in here is your
-            size, it will not be here next month.
-          </p>
+          <Reveal delay={80}>
+            <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-white/80">
+              Pieces rotate as they sell through. If something in here is your
+              size, it will not be here next month.
+            </p>
+          </Reveal>
 
-          <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              to="/products"
-              className="btn bg-white text-ink hover:bg-bone"
-            >
-              Shop the rotation
-              <ArrowRightIcon size={18} />
-            </Link>
-            <a
-              href="#rotation"
-              className="btn border border-white/30 text-white hover:bg-white/10"
-            >
-              Back to the top
-            </a>
-          </div>
+          <Reveal delay={160}>
+            <div className="mt-9 flex flex-col justify-center gap-3 sm:flex-row">
+              <Link to="/products" className="btn btn-inverse group">
+                Shop the rotation
+                <ArrowRightIcon
+                  size={18}
+                  className="transition-transform duration-300 ease-out-expo group-hover:translate-x-1"
+                />
+              </Link>
+
+              <a
+                href="#rotation"
+                className="btn border border-white/30 text-white transition-colors hover:bg-white/10"
+              >
+                Back to the top
+              </a>
+            </div>
+          </Reveal>
         </div>
       </section>
     </>

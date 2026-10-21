@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ProductCard from "./ProductCard";
+import { usePrefersReducedMotion } from "../hooks/useReveal";
 import { ArrowLeftIcon, ArrowRightIcon } from "./icons";
 
 /**
@@ -15,20 +16,6 @@ import { ArrowLeftIcon, ArrowRightIcon } from "./icons";
  */
 
 const ADVANCE_MS = 4500;
-
-function usePrefersReducedMotion() {
-  const [reduced, setReduced] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const sync = () => setReduced(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
-  return reduced;
-}
 
 export default function ProductCarousel({
   products,
@@ -104,6 +91,8 @@ export default function ProductCarousel({
 
   if (count === 0) return null;
 
+  const autoAdvancing = !reduced && !focusWithin && count > 1;
+
   return (
     <section
       aria-label={label}
@@ -121,19 +110,20 @@ export default function ProductCarousel({
           ref={trackRef}
           tabIndex={0}
           aria-label={`${label}, ${count} items`}
-          className="carousel-track flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 lg:gap-6"
+          className="carousel-track flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 sm:gap-5 lg:gap-6"
         >
           {products.map((product) => (
             <li
               key={product.id}
-              className="w-[15rem] shrink-0 snap-start sm:w-[17rem] lg:w-[19rem]"
+              className="w-[72vw] max-w-[16rem] shrink-0 snap-start sm:w-[17rem] sm:max-w-none lg:w-[19rem]"
             >
               <ProductCard product={product} addToCart={addToCart} />
             </li>
           ))}
         </ul>
 
-        <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-1">
+        {/* Hidden on phones, where the track is swiped instead. */}
+        <div className="pointer-events-none absolute inset-y-0 left-0 hidden items-center pl-1 sm:flex">
           <button
             type="button"
             onClick={() => goTo(Math.max(0, index - 1))}
@@ -145,7 +135,7 @@ export default function ProductCarousel({
           </button>
         </div>
 
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-1">
+        <div className="pointer-events-none absolute inset-y-0 right-0 hidden items-center pr-1 sm:flex">
           <button
             type="button"
             onClick={() => goTo(Math.min(count - 1, index + 1))}
@@ -158,7 +148,18 @@ export default function ProductCarousel({
         </div>
       </div>
 
-      <div className="mt-5 flex items-center justify-between gap-4">
+      {/* How much time is left before the track moves on its own. */}
+      <div className="mt-5 h-px w-full bg-line">
+        {autoAdvancing && (
+          <span
+            key={index}
+            aria-hidden="true"
+            className="block h-px w-full origin-left animate-carousel-progress bg-iris"
+          />
+        )}
+      </div>
+
+      <div className="mt-4 flex items-center justify-between gap-4">
         <p className="text-xs tabular-nums text-muted">
           {String(index + 1).padStart(2, "0")} / {String(count).padStart(2, "0")}
         </p>
@@ -166,7 +167,9 @@ export default function ProductCarousel({
         <p className="text-xs text-muted">
           {reduced
             ? "Reduced motion is on, so use the arrows to browse."
-            : "Moves on its own. Arrows to step."}
+            : autoAdvancing
+              ? "Moves on its own. Arrows to step."
+              : "Paused while you browse."}
         </p>
       </div>
     </section>

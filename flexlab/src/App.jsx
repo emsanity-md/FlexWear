@@ -1,14 +1,38 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Outlet, Route, Routes } from "react-router-dom";
 import { useState } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import ScrollToTop from "./components/ScrollToTop";
 import Home from "./pages/Home";
 import ProductList from "./pages/ProductList";
 import CartPage from "./pages/CartPage";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import About from "./pages/About";
 import "./styles/main.css";
+
+/*
+ * There is no account system, so there are no account screens. Every route
+ * renders inside the store shell, and the old /login and /register addresses
+ * redirect home rather than 404ing on a link that used to work.
+ */
+function StoreLayout({ cartCount }) {
+  return (
+    <div className="flex min-h-screen flex-col bg-bone">
+      <a href="#main" className="skip-link">
+        Skip to content
+      </a>
+
+      <ScrollToTop />
+
+      <Header cartCount={cartCount} />
+
+      <main id="main" tabIndex={-1} className="flex-1 focus:outline-none">
+        <Outlet />
+      </main>
+
+      <Footer />
+    </div>
+  );
+}
 
 export default function App() {
   /*
@@ -52,44 +76,29 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Auth screens render their own chrome */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route element={<StoreLayout cartCount={cartCount} />}>
+          <Route path="/" element={<Home addToCart={addToCart} />} />
+          <Route
+            path="/products"
+            element={<ProductList addToCart={addToCart} />}
+          />
+          <Route
+            path="/cart"
+            element={
+              <CartPage
+                cart={cart}
+                updateQuantity={updateQuantity}
+                removeFromCart={removeFromCart}
+              />
+            }
+          />
+          <Route path="/about" element={<About />} />
 
-        {/* Store shell */}
-        <Route
-          path="/*"
-          element={
-            <div className="flex min-h-screen flex-col bg-bone">
-              <Header cartCount={cartCount} />
-              <main className="flex-1">
-                <Routes>
-                  <Route
-                    path="/"
-                    element={<Home addToCart={addToCart} />}
-                  />
-                  <Route
-                    path="/products"
-                    element={<ProductList addToCart={addToCart} />}
-                  />
-                  <Route
-                    path="/cart"
-                    element={
-                      <CartPage
-                        cart={cart}
-                        updateQuantity={updateQuantity}
-                        removeFromCart={removeFromCart}
-                      />
-                    }
-                  />
-                  <Route path="/about" element={<About />} />
-                  <Route path="*" element={<Home addToCart={addToCart} />} />
-                </Routes>
-              </main>
-              <Footer />
-            </div>
-          }
-        />
+          {/* Retired account screens. Kept as redirects so old links land somewhere useful. */}
+          <Route path="/login" element={<Navigate to="/" replace />} />
+          <Route path="/register" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
